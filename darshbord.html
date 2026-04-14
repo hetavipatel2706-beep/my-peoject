@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finora | Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0f1a;
+      --bg2:#0f1629;
+      --card:rgba(255,255,255,.07);
+      --line:rgba(255,255,255,.10);
+      --text:#eef2ff;
+      --muted:#a8b0cf;
+      --blue:#4f8cff;
+      --green:#22c55e;
+      --cyan:#06b6d4;
+      --red:#ff7b7b;
+      --shadow:0 18px 50px rgba(0,0,0,.35);
+      --radius:24px;
+      --grad:linear-gradient(135deg,var(--blue),var(--cyan),var(--green));
+      --glow:
+        radial-gradient(40% 40% at 10% 10%, rgba(79,140,255,.15), transparent 60%),
+        radial-gradient(40% 40% at 90% 10%, rgba(34,197,94,.12), transparent 60%),
+        radial-gradient(35% 35% at 50% 100%, rgba(6,182,212,.12), transparent 60%);
+    }
+
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family:'DM Sans',sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      background:var(--glow);
+      z-index:-1;
+      pointer-events:none;
+    }
+
+    .container{width:min(1250px,92%);margin:auto}
+    .glass{
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border:1px solid var(--line);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+      box-shadow:var(--shadow);
+      border-radius:var(--radius);
+    }
+    .pill{
+      display:inline-flex;align-items:center;gap:.5rem;
+      padding:.5rem .85rem;border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.06);
+      color:#dbe4ff;font-size:.9rem;
+    }
+    .btn{
+      padding:.85rem 1.2rem;border:none;border-radius:16px;
+      cursor:pointer;font-weight:700;transition:.25s ease;
+    }
+    .btn-primary{
+      background:var(--grad);color:#06111c;
+      box-shadow:0 10px 30px rgba(79,140,255,.25);
+    }
+    .btn-secondary{
+      background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--line);
+    }
+    .btn:hover{transform:translateY(-2px)}
+
+    .nav-wrap{
+      padding:18px 0 8px;
+      position:sticky;
+      top:0;
+      z-index:50;
+      background:linear-gradient(to bottom, rgba(11,15,26,.85), rgba(11,15,26,.35), transparent)
+    }
+    nav{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:14px 18px;
+    }
+    .brand{display:flex;align-items:center;gap:.8rem;font-weight:800}
+    .logo{
+      width:42px;height:42px;border-radius:14px;background:var(--grad);
+      display:grid;place-items:center;color:#071018;font-weight:900;
+    }
+    .nav-right{display:flex;align-items:center;gap:12px}
+    .search{
+      padding:12px 16px;border-radius:16px;border:1px solid var(--line);
+      background:rgba(255,255,255,.06);color:var(--text);min-width:260px;
+      outline:none;
+    }
+    .avatar{
+      width:44px;height:44px;border-radius:999px;
+      background:rgba(255,255,255,.10);display:grid;place-items:center;font-weight:700;
+      border:1px solid var(--line);
+    }
+
+    .dashboard{
+      display:grid;
+      grid-template-columns:280px 1fr;
+      gap:22px;
+      padding:22px 0 40px;
+    }
+
+    .sidebar{
+      padding:20px;
+      height:calc(100vh - 110px);
+      position:sticky;
+      top:90px;
+    }
+    .menu{
+      display:grid;
+      gap:10px;
+      margin-top:18px;
+    }
+    .menu a{
+      padding:14px 16px;
+      border-radius:18px;
+      color:#dfe6ff;
+      text-decoration:none;
+      border:1px solid transparent;
+      transition:.2s;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .menu a:hover,.menu a.active{
+      background:rgba(79,140,255,.12);
+      border-color:rgba(79,140,255,.25);
+    }
+    .side-card{
+      margin-top:22px;
+      padding:18px;
+    }
+    .side-card h4{margin:12px 0 6px}
+    .side-card p{color:var(--muted);font-size:.95rem}
+
+    .main{display:grid;gap:22px}
+    .welcome{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:18px;
+      padding:28px;
+    }
+    .welcome h1{font-size:2rem;line-height:1.1}
+    .welcome p{color:var(--muted);margin-top:8px}
+    .gradient-text{
+      background:var(--grad);
+      -webkit-background-clip:text;
+      background-clip:text;
+      color:transparent;
+    }
+
+    .top-cards{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:18px;
+    }
+    .card{padding:22px}
+    .muted{color:var(--muted)}
+    .amount{font-size:2rem;font-weight:800;margin-top:10px}
+    .positive{color:#7ef2a4}
+    .negative{color:#ff9d9d}
+
+    .content-grid{
+      display:grid;
+      grid-template-columns:1.3fr .9fr;
+      gap:22px;
+    }
+
+    .chart-card{padding:22px}
+    .chart-header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+    .chart{
+      height:280px;
+      display:flex;
+      align-items:flex-end;
+      gap:14px;
+      margin-top:28px;
+    }
+    .bar-wrap{flex:1;text-align:center}
+    .bar{
+      width:100%;
+      border-radius:18px 18px 10px 10px;
+      background:linear-gradient(180deg, rgba(79,140,255,.95), rgba(6,182,212,.85));
+      box-shadow:0 12px 30px rgba(79,140,255,.16);
+      transition:.25s ease;
+    }
+    .bar:hover{transform:translateY(-6px)}
+    .bar-label{margin-top:10px;color:var(--muted);font-size:.9rem}
+
+    .transactions{padding:22px}
+    .tx-list{display:grid;gap:14px;margin-top:18px}
+    .tx{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:14px 16px;
+      border-radius:18px;
+      background:rgba(255,255,255,.05);
+      border:1px solid var(--line);
+    }
+    .tx-left{display:flex;align-items:center;gap:12px}
+    .tx-icon{
+      width:42px;height:42px;border-radius:14px;display:grid;place-items:center;
+      background:rgba(255,255,255,.08);
+    }
+
+    .goal-card,.ai-card{padding:22px}
+    .progress{
+      height:14px;border-radius:999px;background:rgba(255,255,255,.08);
+      overflow:hidden;margin-top:16px;
+      border:1px solid var(--line);
+    }
+    .progress span{
+      display:block;height:100%;width:72%;
+      background:var(--grad);border-radius:999px;
+    }
+
+    .goals{display:grid;gap:14px;margin-top:16px}
+    .goal{
+      padding:16px;border-radius:18px;background:rgba(255,255,255,.05);border:1px solid var(--line);
+    }
+
+    .chatbox{display:grid;gap:12px;margin-top:18px}
+    .bubble{
+      max-width:82%;padding:14px 16px;border-radius:18px;border:1px solid var(--line);
+    }
+    .bubble.user{justify-self:end;background:rgba(79,140,255,.14)}
+    .bubble.ai{background:rgba(255,255,255,.06)}
+    .chat-input{display:flex;gap:12px;margin-top:16px}
+    .chat-input input{
+      flex:1;padding:14px 16px;border-radius:16px;border:1px solid var(--line);
+      background:rgba(255,255,255,.06);color:var(--text);outline:none;
+    }
+
+    input, select{
+      background:#111827;
+      color:#fff;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:12px;
+      outline:none;
+    }
+
+    .popup-overlay{
+      display:none;
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.65);
+      justify-content:center;
+      align-items:center;
+      z-index:99999;
+      padding:20px;
+    }
+
+    .popup-box{
+      width:min(600px, 95%);
+      max-height:85vh;
+      overflow-y:auto;
+      background:#0f1629;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:24px;
+      padding:24px;
+      box-shadow:0 18px 50px rgba(0,0,0,.45);
+    }
+
+    .popup-item{
+      padding:14px;
+      border-radius:16px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      margin-top:12px;
+    }
+
+    .toggle-group{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .toggle-btn{
+      padding:.65rem 1rem;
+      border:none;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:700;
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      border:1px solid var(--line);
+      transition:.2s ease;
+    }
+    .toggle-btn.active{
+      background:var(--grad);
+      color:#06111c;
+    }
+
+    @media (max-width: 1100px){
+      .dashboard{grid-template-columns:1fr}
+      .sidebar{height:auto;position:relative;top:0}
+      .content-grid{grid-template-columns:1fr}
+    }
+    @media (max-width: 760px){
+      .top-cards{grid-template-columns:1fr}
+      .welcome{flex-direction:column;align-items:flex-start}
+      .nav-right .search{display:none}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="nav-wrap">
+    <div class="container">
+      <nav class="glass">
+        <div class="brand">
+          <div class="logo">F</div>
+          <div>
+            <div style="font-size:1.1rem;">Finora</div>
+            <div class="muted" style="font-size:.85rem;">AI Finance Dashboard</div>
+          </div>
+        </div>
+
+        <div class="nav-right">
+          <input class="search" type="text" placeholder="Search transactions, budgets..." />
+          <button class="btn btn-secondary" onclick="logout()">Logout</button>
+          <div class="avatar" id="userAvatar">H</div>
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <div class="container dashboard">
+
+    <aside class="sidebar glass">
+      <span class="pill">Main Menu</span>
+
+      <div class="menu">
+        <a href="#" class="active">🏠 Dashboard</a>
+        <a href="#">💸 Transactions</a>
+        <a href="#">📊 Analytics</a>
+        <a href="#">🎯 Budgets</a>
+        <a href="#">🤖 AI Assistant</a>
+        <a href="#">⚙ Settings</a>
+      </div>
+
+      <div class="side-card glass">
+        <span class="pill">Pro Tip</span>
+        <h4>Save more this month</h4>
+        <p>Reducing food delivery by 20% can help you save around ₹2,500 this month.</p>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <section class="welcome glass">
+        <div>
+          <span class="pill">Welcome back</span>
+          <h1 style="margin-top:14px;">Hello, <span class="gradient-text" id="userName">Hetvi</span> 👋</h1>
+          <p>Here’s a complete overview of your finances today.</p>
+        </div>
+      </section>
+
+      <!-- Wallet / Bank / Assets -->
+      <section class="top-cards">
+        <div class="card glass">
+          <div class="muted">Wallet</div>
+          <div class="amount" id="walletBalance">₹0</div>
+          <p class="muted">Cash Wallet</p>
+          <div style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="openWallet()">Add Wallet</button>
+            <button class="btn btn-secondary" onclick="viewWallet()">View Wallet</button>
+          </div>
+        </div>
+
+        <div class="card glass">
+          <div class="muted">Bank</div>
+          <div class="amount" id="bankCount">0 Accounts</div>
+          <p class="muted">Total: ₹<span id="bankTotal">0</span></p>
+          <div style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="openBank()">Add Bank</button>
+            <button class="btn btn-secondary" onclick="viewBank()">View Bank</button>
+          </div>
+        </div>
+
+        <div class="card glass">
+          <div class="muted">Assets</div>
+          <div class="amount" id="assetTotal">₹0</div>
+          <p class="muted">Your Assets</p>
+          <div style="margin-top:15px; display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="openAsset()">Add Asset</button>
+            <button class="btn btn-secondary" onclick="viewAsset()">View Asset</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Goals / Bills -->
+      <section class="content-grid" style="margin-top:22px;">
+        <div class="goal-card glass">
+          <div class="chart-header">
+            <div>
+              <h2>Savings Goals</h2>
+              <p class="muted">Track your financial goals</p>
+            </div>
+            <button class="btn btn-primary" onclick="openGoal()">+ Add Goal</button>
+          </div>
+          <div id="goalList" class="goals" style="margin-top:18px;"></div>
+        </div>
+
+        <div class="goal-card glass">
+          <div class="chart-header">
+            <div>
+              <h2>Upcoming Bills</h2>
+              <p class="muted">Track pending bills and reminders</p>
+            </div>
+            <button class="btn btn-primary" onclick="openBill()">+ Add Bill</button>
+          </div>
+          <div id="billList" class="goals" style="margin-top:18px;"></div>
+        </div>
+      </section>
+
+      <!-- Main Content -->
+      <section class="content-grid">
+
+        <div style="display:grid;gap:22px;">
+          <div class="chart-card glass">
+            <div class="chart-header">
+              <div>
+                <h2>Analytics</h2>
+                <p class="muted" id="analyticsSubtitle">Your weekly expense activity</p>
+              </div>
+
+              <div class="toggle-group">
+                <button class="toggle-btn active" id="weeklyBtn" onclick="showWeeklyAnalytics()">Weekly Analytics</button>
+                <button class="toggle-btn" id="monthlyBtn" onclick="showMonthlyAnalytics()">Monthly Analytics</button>
+              </div>
+            </div>
+
+            <div class="chart" id="analyticsChart"></div>
+          </div>
+
+          <!-- Recent Transactions -->
+          <div class="transactions glass">
+            <div class="chart-header">
+              <div>
+                <h2>Recent Transactions</h2>
+                <p class="muted">Latest money activity</p>
+              </div>
+              <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="btn btn-primary" onclick="openTransaction()">+ Add Transaction</button>
+                <button class="btn btn-secondary" onclick="viewTransactions()">View All</button>
+              </div>
+            </div>
+
+            <div class="tx-list"></div>
+          </div>
+        </div>
+
+        <div style="display:grid;gap:22px;">
+          <div class="ai-card glass">
+            <div class="chart-header">
+              <div>
+                <h2>AI Finance Assistant</h2>
+                <p class="muted">Smart money advice</p>
+              </div>
+            </div>
+
+            <div class="chatbox" id="chatbox">
+              <div class="bubble user">How can I save money this month?</div>
+              <div class="bubble ai">You spent 18% more on food delivery. Reducing this can save about ₹2,800.</div>
+            </div>
+
+            <div class="chat-input">
+              <input type="text" id="chatInput" placeholder="Ask Finora AI..." />
+              <button class="btn btn-primary" onclick="sendMessage()">Ask</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Transaction Modal -->
+  <div id="transactionModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:9999;">
+    <div style="background:#0f1629; padding:25px; border-radius:20px; width:340px;">
+      <h3>Add Transaction</h3>
+      <input id="txName" placeholder="Transaction Name" style="width:100%;margin:10px 0;padding:10px;">
+      <input id="txAmount" type="number" placeholder="Amount" style="width:100%;margin:10px 0;padding:10px;">
+      <input id="txCategory" placeholder="Category (e.g. Food)" style="width:100%;margin:10px 0;padding:10px;">
+      <select id="txType" style="width:100%;margin:10px 0;padding:10px;">
+        <option value="debit">Debit</option>
+        <option value="credit">Credit</option>
+      </select>
+      <button onclick="addTransaction()" style="margin-top:10px;width:100%;">Add Transaction</button>
+      <button onclick="closeTransaction()" style="margin-top:10px;width:100%;">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Wallet Modal -->
+  <div id="walletModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:9999;">
+    <div style="background:#0f1629; padding:25px; border-radius:20px; width:320px;">
+      <h3>Add Wallet</h3>
+      <input id="walletName" placeholder="Wallet Name" style="width:100%;margin:10px 0;padding:10px;">
+      <input id="walletAmount" type="number" placeholder="Wallet Balance" style="width:100%;margin:10px 0;padding:10px;">
+      <button onclick="addWallet()" style="margin-top:10px;width:100%;">Add Wallet</button>
+      <button onclick="closeWallet()" style="margin-top:10px;width:100%;">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Bank Modal -->
+  <div id="bankModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:9999;">
+    <div style="background:#0f1629; padding:25px; border-radius:20px; width:320px;">
+      <h3>Add Bank</h3>
+      <input id="bankName" placeholder="Bank Name" style="width:100%;margin:10px 0;padding:10px;">
+      <input id="bankAmount" type="number" placeholder="Bank Balance" style="width:100%;margin:10px 0;padding:10px;">
+      <button onclick="addBank()" style="margin-top:10px;width:100%;">Add Bank</button>
+      <button onclick="closeBank()" style="margin-top:10px;width:100%;">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Asset Modal -->
+  <div id="assetModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:9999;">
+    <div style="background:#0f1629; padding:25px; border-radius:20px; width:320px;">
+      <h3>Add Asset</h3>
+      <input id="assetName" placeholder="Asset Name" style="width:100%;margin:10px 0;padding:10px;">
+      <input id="assetAmount" type="number" placeholder="Asset Value" style="width:100%;margin:10px 0;padding:10px;">
+      <button onclick="addAsset()" style="margin-top:10px;width:100%;">Add Asset</button>
+      <button onclick="closeAsset()" style="margin-top:10px;width:100%;">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Goal Modal -->
+  <div id="goalModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:9999;">
+    <div style="background:#0f1629; padding:25px; border-radius:20px; width:340px;">
+      <h3>Add Savings Goal</h3>
+      <input id="goalName" placeholder="Goal Name (e.g. Laptop)" style="width:100%;margin:10px 0;padding:10px;">
+      <input id="goalTarget" type="number" placeholder="Target Amount" style="width:100%;margin:10px 0;padding:10px;">
+      <input id="goalSaved" type="number" placeholder="Saved Amount" style="width:100%;margin:10px 0;padding:10px;">
+      <button onclick="addGoal()" style="margin-top:10px;width:100%;">Add Goal</button>
+      <button onclick="closeGoal()" style="margin-top:10px;width:100%;">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Bill Modal -->
+  <div id="billModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; z-index:9999;">
+    <div style="background:#0f1629; padding:25px; border-radius:20px; width:340px;">
+      <h3>Add Bill Reminder</h3>
+      <input id="billName" placeholder="Bill Name (e.g. Electricity)" style="width:100%;margin:10px 0;padding:10px;">
+      <input id="billAmount" type="number" placeholder="Bill Amount" style="width:100%;margin:10px 0;padding:10px;">
+      <input id="billDate" type="date" style="width:100%;margin:10px 0;padding:10px;">
+      <button onclick="addBill()" style="margin-top:10px;width:100%;">Add Bill</button>
+      <button onclick="closeBill()" style="margin-top:10px;width:100%;">Cancel</button>
+    </div>
+  </div>
+
+  <!-- View Popup -->
+  <div id="viewPopup" class="popup-overlay">
+    <div class="popup-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+        <h2 id="popupTitle">Details</h2>
+        <button class="btn btn-secondary" onclick="closePopup()">Close</button>
+      </div>
+      <div id="popupContent" style="margin-top:18px;"></div>
+    </div>
+  </div>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem("user")) || {name:"Hetvi", email:"demo@gmail.com"};
+    document.getElementById("userName").textContent = user.name.split(" ")[0];
+    document.getElementById("userAvatar").textContent = user.name.charAt(0).toUpperCase();
+
+    let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+    let wallets = JSON.parse(localStorage.getItem("wallets")) || [];
+    let banks = JSON.parse(localStorage.getItem("banks")) || [];
+    let assets = JSON.parse(localStorage.getItem("assets")) || [];
+    let goals = JSON.parse(localStorage.getItem("goals")) || [];
+    let bills = JSON.parse(localStorage.getItem("bills")) || [];
+
+    function logout(){
+      localStorage.removeItem("user");
+      window.location.href = "index.html";
+    }
+
+    function sendMessage(){
+      const input = document.getElementById("chatInput");
+      const chatbox = document.getElementById("chatbox");
+      const msg = input.value.trim();
+
+      if(msg === "") return;
+
+      const userBubble = document.createElement("div");
+      userBubble.className = "bubble user";
+      userBubble.textContent = msg;
+      chatbox.appendChild(userBubble);
+
+      const aiBubble = document.createElement("div");
+      aiBubble.className = "bubble ai";
+
+      if(msg.toLowerCase().includes("save")){
+        aiBubble.textContent = "Try reducing shopping and food delivery. You can save around ₹3,000 this month.";
+      } else if(msg.toLowerCase().includes("budget")){
+        aiBubble.textContent = "Your budget looks manageable. Keep tracking expenses to improve savings.";
+      } else if(msg.toLowerCase().includes("expense")){
+        aiBubble.textContent = "Your highest expenses are Shopping, Food, and Travel this month.";
+      } else {
+        aiBubble.textContent = "Based on your activity, maintaining your current budget and reducing unnecessary spending will improve savings.";
+      }
+
+      setTimeout(() => {
+        chatbox.appendChild(aiBubble);
+        chatbox.scrollTop = chatbox.scrollHeight;
+      }, 500);
+
+      input.value = "";
+    }
+
+    function getTodayDate(){
+      const today = new Date();
+      return today.toLocaleDateString("en-GB");
+    }
+
+    function openPopup(title, items, type){
+      const popup = document.getElementById("viewPopup");
+      const popupTitle = document.getElementById("popupTitle");
+      const popupContent = document.getElementById("popupContent");
+
+      popupTitle.textContent = title;
+      popupContent.innerHTML = "";
+
+      if(items.length === 0){
+        popupContent.innerHTML = `
+          <div class="popup-item">
+            <strong>No data found</strong>
+            <p class="muted" style="margin-top:6px;">Add your first ${type.toLowerCase()}.</p>
+          </div>
+        `;
+      } else {
+        items.forEach(item => {
+          popupContent.innerHTML += `
+            <div class="popup-item">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+                <div>
+                  <strong>${item.name}</strong>
+                  <p class="muted" style="margin-top:6px;">Date: ${item.date || getTodayDate()}</p>
+                </div>
+                <div style="font-weight:800;font-size:1.1rem;">₹${item.amount}</div>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      popup.style.display = "flex";
+    }
+
+    function closePopup(){
+      document.getElementById("viewPopup").style.display = "none";
+    }
+
+    /* ================= TRANSACTION ================= */
+    function openTransaction(){ document.getElementById("transactionModal").style.display = "flex"; }
+    function closeTransaction(){ document.getElementById("transactionModal").style.display = "none"; }
+
+    function addTransaction(){
+      const name = document.getElementById("txName").value.trim();
+      const amount = parseFloat(document.getElementById("txAmount").value);
+      const category = document.getElementById("txCategory").value.trim();
+      const type = document.getElementById("txType").value;
+
+      if(!name || isNaN(amount) || amount <= 0 || !category){
+        alert("Fill transaction details");
+        return;
+      }
+
+      transactions.unshift({
+        name,
+        amount,
+        category,
+        type,
+        date: getTodayDate()
+      });
+
+      localStorage.setItem("transactions", JSON.stringify(transactions));
+
+      document.getElementById("txName").value = "";
+      document.getElementById("txAmount").value = "";
+      document.getElementById("txCategory").value = "";
+      document.getElementById("txType").value = "debit";
+
+      closeTransaction();
+      renderTransactions();
+      updateBalance();
+    }
+
+    function viewTransactions(){
+      const popup = document.getElementById("viewPopup");
+      const popupTitle = document.getElementById("popupTitle");
+      const popupContent = document.getElementById("popupContent");
+
+      popupTitle.textContent = "All Transactions";
+      popupContent.innerHTML = "";
+
+      if(transactions.length === 0){
+        popupContent.innerHTML = `
+          <div class="popup-item">
+            <strong>No transactions found</strong>
+            <p class="muted" style="margin-top:6px;">Add your first transaction.</p>
+          </div>
+        `;
+      } else {
+        transactions.forEach((tx, index) => {
+          const isCredit = tx.type === "credit";
+          const amountColor = isCredit ? "#7ef2a4" : "#ff9d9d";
+          const sign = isCredit ? "+ ₹" : "- ₹";
+
+          popupContent.innerHTML += `
+            <div class="popup-item">
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+                <div>
+                  <strong>${tx.name}</strong>
+                  <p class="muted" style="margin-top:6px;">${tx.category} • ${tx.type.toUpperCase()} • ${tx.date || getTodayDate()}</p>
+                </div>
+                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                  <div style="font-weight:800;font-size:1.05rem;color:${amountColor};">${sign}${tx.amount}</div>
+                  <button class="btn btn-secondary" onclick="editTransaction(${index})">Edit</button>
+                  <button class="btn btn-secondary" onclick="deleteTransaction(${index}); viewTransactions();">Delete</button>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      popup.style.display = "flex";
+    }
+
+    /* ================= WALLET ================= */
+    function openWallet(){ document.getElementById("walletModal").style.display = "flex"; }
+    function closeWallet(){ document.getElementById("walletModal").style.display = "none"; }
+
+    function addWallet(){
+      const name = document.getElementById("walletName").value.trim();
+      const amount = parseFloat(document.getElementById("walletAmount").value);
+
+      if(!name || isNaN(amount) || amount <= 0){ 
+        alert("Fill wallet details"); 
+        return; 
+      }
+
+      wallets.push({
+        name,
+        amount,
+        date:getTodayDate(),
+        id: Date.now()
+      });
+
+      localStorage.setItem("wallets", JSON.stringify(wallets));
+      document.getElementById("walletName").value = "";
+      document.getElementById("walletAmount").value = "";
+      closeWallet();
+      updateWalletUI();
+      updateBalance();
+    }
+
+    function updateWalletUI(){
+      let total = 0;
+      wallets.forEach(w => total += w.amount);
+      document.getElementById("walletBalance").textContent = "₹" + total;
+    }
+
+    function viewWallet(){
+      const data = wallets.map(w => ({
+        name: w.name,
+        amount: w.amount,
+        date: w.date || getTodayDate()
+      }));
+      openPopup("Wallet Details", data, "Wallet");
+    }
+
+    /* ================= BANK ================= */
+    function openBank(){ document.getElementById("bankModal").style.display = "flex"; }
+    function closeBank(){ document.getElementById("bankModal").style.display = "none"; }
+
+    function addBank(){
+      const name = document.getElementById("bankName").value.trim();
+      const amount = parseFloat(document.getElementById("bankAmount").value);
+
+      if(!name || isNaN(amount) || amount <= 0){ 
+        alert("Fill bank details"); 
+        return; 
+      }
+
+      banks.push({name, amount, date:getTodayDate()});
+      localStorage.setItem("banks", JSON.stringify(banks));
+      document.getElementById("bankName").value = "";
+      document.getElementById("bankAmount").value = "";
+      closeBank();
+      updateBankUI();
+      updateBalance();
+    }
+
+    function updateBankUI(){
+      let total = 0;
+      banks.forEach(b => total += b.amount);
+      document.getElementById("bankCount").textContent = banks.length + " Accounts";
+      document.getElementById("bankTotal").textContent = total;
+    }
+
+    function viewBank(){
+      const data = banks.map(b => ({
+        name: b.name,
+        amount: b.amount,
+        date: b.date || getTodayDate()
+      }));
+      openPopup("Bank Details", data, "Bank");
+    }
+
+    /* ================= ASSET ================= */
+    function openAsset(){ document.getElementById("assetModal").style.display = "flex"; }
+    function closeAsset(){ document.getElementById("assetModal").style.display = "none"; }
+
+    function addAsset(){
+      const name = document.getElementById("assetName").value.trim();
+      const amount = parseFloat(document.getElementById("assetAmount").value);
+
+      if(!name || isNaN(amount) || amount <= 0){ 
+        alert("Fill asset details"); 
+        return; 
+      }
+
+      assets.push({name, amount, date:getTodayDate()});
+      localStorage.setItem("assets", JSON.stringify(assets));
+      document.getElementById("assetName").value = "";
+      document.getElementById("assetAmount").value = "";
+      closeAsset();
+      updateAssetUI();
+      updateBalance();
+    }
+
+    function updateAssetUI(){
+      let total = 0;
+      assets.forEach(a => total += a.amount);
+      document.getElementById("assetTotal").textContent = "₹" + total;
+    }
+
+    function viewAsset(){
+      const data = assets.map(a => ({
+        name: a.name,
+        amount: a.amount,
+        date: a.date || getTodayDate()
+      }));
+      openPopup("Asset Details", data, "Asset");
+    }
+
+    /* ================= GOALS ================= */
+    function openGoal(){ document.getElementById("goalModal").style.display = "flex"; }
+    function closeGoal(){ document.getElementById("goalModal").style.display = "none"; }
+
+    function addGoal(){
+      const name = document.getElementById("goalName").value.trim();
+      const target = parseFloat(document.getElementById("goalTarget").value);
+      const saved = parseFloat(document.getElementById("goalSaved").value);
+
+      if(!name || isNaN(target) || isNaN(saved) || target <= 0 || saved < 0){
+        alert("Fill goal details");
+        return;
+      }
+
+      goals.push({name, target, saved});
+      localStorage.setItem("goals", JSON.stringify(goals));
+      document.getElementById("goalName").value = "";
+      document.getElementById("goalTarget").value = "";
+      document.getElementById("goalSaved").value = "";
+      closeGoal();
+      renderGoals();
+    }
+
+    function renderGoals(){
+      const goalList = document.getElementById("goalList");
+      if(!goalList) return;
+
+      goalList.innerHTML = "";
+
+      if(goals.length === 0){
+        goalList.innerHTML = `<div class="goal"><strong>No goals yet</strong><p class="muted" style="margin-top:6px;">Add your first savings goal.</p></div>`;
+        return;
+      }
+
+      goals.forEach((g, index)=>{
+        const percent = Math.min(100, Math.round((g.saved / g.target) * 100));
+        const div = document.createElement("div");
+        div.className = "goal";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+            <div>
+              <strong>🎯 ${g.name}</strong>
+              <p class="muted" style="margin-top:6px;">₹${g.saved} / ₹${g.target} saved</p>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-secondary" onclick="editGoal(${index})">Edit</button>
+              <button class="btn btn-secondary" onclick="deleteGoal(${index})">Delete</button>
+            </div>
+          </div>
+          <div class="progress" style="margin-top:12px;"><span style="width:${percent}%"></span></div>
+        `;
+        goalList.appendChild(div);
+      });
+    }
+
+    function editGoal(index){
+      const g = goals[index];
+      const newSaved = prompt(`Update saved amount for "${g.name}"`, g.saved);
+      if(newSaved === null) return;
+      const value = parseFloat(newSaved);
+      if(isNaN(value) || value < 0){ alert("Invalid amount"); return; }
+      goals[index].saved = value;
+      localStorage.setItem("goals", JSON.stringify(goals));
+      renderGoals();
+    }
+
+    function deleteGoal(index){
+      if(!confirm("Delete this goal?")) return;
+      goals.splice(index, 1);
+      localStorage.setItem("goals", JSON.stringify(goals));
+      renderGoals();
+    }
+
+    /* ================= BILLS ================= */
+    function openBill(){ document.getElementById("billModal").style.display = "flex"; }
+    function closeBill(){ document.getElementById("billModal").style.display = "none"; }
+
+    function addBill(){
+      const name = document.getElementById("billName").value.trim();
+      const amount = parseFloat(document.getElementById("billAmount").value);
+      const dueDate = document.getElementById("billDate").value;
+
+      if(!name || isNaN(amount) || amount <= 0 || !dueDate){
+        alert("Fill bill details");
+        return;
+      }
+
+      bills.push({name, amount, dueDate, paid:false});
+      localStorage.setItem("bills", JSON.stringify(bills));
+      document.getElementById("billName").value = "";
+      document.getElementById("billAmount").value = "";
+      document.getElementById("billDate").value = "";
+      closeBill();
+      renderBills();
+    }
+
+    function renderBills(){
+      const billList = document.getElementById("billList");
+      if(!billList) return;
+
+      billList.innerHTML = "";
+
+      if(bills.length === 0){
+        billList.innerHTML = `<div class="goal"><strong>No bills yet</strong><p class="muted" style="margin-top:6px;">Add your first bill reminder.</p></div>`;
+        return;
+      }
+
+      bills.forEach((b, index)=>{
+        const status = b.paid ? "Paid" : "Unpaid";
+        const statusColor = b.paid ? "#7ef2a4" : "#ff9d9d";
+
+        const div = document.createElement("div");
+        div.className = "goal";
+        div.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+            <div>
+              <strong>🧾 ${b.name}</strong>
+              <p class="muted" style="margin-top:6px;">₹${b.amount} • Due: ${b.dueDate}</p>
+              <p style="margin-top:6px; color:${statusColor}; font-weight:700;">${status}</p>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="btn btn-secondary" onclick="toggleBillPaid(${index})">${b.paid ? "Mark Unpaid" : "Mark Paid"}</button>
+              <button class="btn btn-secondary" onclick="deleteBill(${index})">Delete</button>
+            </div>
+          </div>
+        `;
+        billList.appendChild(div);
+      });
+    }
+
+    function toggleBillPaid(index){
+      bills[index].paid = !bills[index].paid;
+      localStorage.setItem("bills", JSON.stringify(bills));
+      renderBills();
+    }
+
+    function deleteBill(index){
+      if(!confirm("Delete this bill?")) return;
+      bills.splice(index, 1);
+      localStorage.setItem("bills", JSON.stringify(bills));
+      renderBills();
+    }
+
+    /* ================= TRANSACTIONS ================= */
+    function renderTransactions(){
+      const list = document.querySelector(".tx-list");
+      if(!list) return;
+
+      list.innerHTML = "";
+
+      if(transactions.length === 0){
+        list.innerHTML = `
+          <div class="tx">
+            <div class="tx-left">
+              <div class="tx-icon">💸</div>
+              <div>
+                <strong>No transactions yet</strong>
+                <div class="muted">Add your first transaction</div>
+              </div>
+            </div>
+            <strong class="muted">₹0</strong>
+          </div>
+        `;
+        return;
+      }
+
+      transactions.slice(0, 5).forEach((tx, index)=>{
+        const div = document.createElement("div");
+        div.className = "tx";
+
+        const isCredit = tx.type === "credit";
+        const amountClass = isCredit ? "positive" : "negative";
+        const amountSign = isCredit ? "+ ₹" : "- ₹";
+        const typeLabel = isCredit ? "Credit" : "Debit";
+
+        div.innerHTML = `
+          <div class="tx-left">
+            <div class="tx-icon">${isCredit ? "💰" : "💸"}</div>
+            <div>
+              <strong>${tx.name}</strong>
+              <div class="muted">${tx.category} • ${typeLabel}</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <strong class="${amountClass}">${amountSign}${tx.amount}</strong>
+            <button class="btn btn-secondary" onclick="editTransaction(${index})">Edit</button>
+            <button class="btn btn-secondary" onclick="deleteTransaction(${index})">Delete</button>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function editTransaction(index){
+      const tx = transactions[index];
+      const newName = prompt("Edit transaction name:", tx.name);
+      if(newName === null) return;
+
+      const newAmount = prompt("Edit amount:", tx.amount);
+      if(newAmount === null) return;
+
+      const newCategory = prompt("Edit category:", tx.category);
+      if(newCategory === null) return;
+
+      const newType = prompt("Edit type (credit/debit):", tx.type || "debit");
+      if(newType === null) return;
+
+      const amountValue = parseFloat(newAmount);
+      const finalType = newType.trim().toLowerCase();
+
+      if(!newName.trim() || isNaN(amountValue) || !newCategory.trim() || !["credit","debit"].includes(finalType)){
+        alert("Invalid values");
+        return;
+      }
+
+      transactions[index] = {
+        name: newName.trim(),
+        amount: amountValue,
+        category: newCategory.trim(),
+        type: finalType,
+        date: tx.date || getTodayDate()
+      };
+
+      localStorage.setItem("transactions", JSON.stringify(transactions));
+      renderTransactions();
+      updateBalance();
+    }
+
+    function deleteTransaction(index){
+      if(!confirm("Delete this transaction?")) return;
+      transactions.splice(index, 1);
+      localStorage.setItem("transactions", JSON.stringify(transactions));
+      renderTransactions();
+      updateBalance();
+    }
+
+    /* ================= TOTAL BALANCE ================= */
+    function updateBalance(){
+      let totalDebit = 0;
+      let totalCredit = 0;
+
+      transactions.forEach(tx => {
+        if(tx.type === "credit"){
+          totalCredit += tx.amount;
+        } else {
+          totalDebit += tx.amount;
+        }
+      });
+
+      let walletTotal = 0;
+      wallets.forEach(w => walletTotal += w.amount);
+
+      let bankTotal = 0;
+      banks.forEach(b => bankTotal += b.amount);
+
+      let assetTotal = 0;
+      assets.forEach(a => assetTotal += a.amount);
+
+      const finalBalance = walletTotal + bankTotal + assetTotal + totalCredit - totalDebit;
+      document.getElementById("mainBalance")?.remove();
+
+      const balanceCard = document.querySelector(".welcome");
+      if (!document.getElementById("balanceDisplay")) {
+        const div = document.createElement("div");
+        div.id = "balanceDisplay";
+        div.className = "pill";
+        div.style.fontWeight = "700";
+        div.style.fontSize = "1rem";
+        div.textContent = "Total Balance: ₹" + finalBalance;
+        balanceCard.appendChild(div);
+      } else {
+        document.getElementById("balanceDisplay").textContent = "Total Balance: ₹" + finalBalance;
+      }
+    }
+
+    /* ================= ANALYTICS ================= */
+    const weeklyData = [
+      {label:"Mon", value:90},
+      {label:"Tue", value:140},
+      {label:"Wed", value:100},
+      {label:"Thu", value:180},
+      {label:"Fri", value:130},
+      {label:"Sat", value:210},
+      {label:"Sun", value:150}
+    ];
+
+    const monthlyData = [
+      {label:"Jan", value:120},
+      {label:"Feb", value:180},
+      {label:"Mar", value:150},
+      {label:"Apr", value:220},
+      {label:"May", value:170},
+      {label:"Jun", value:250}
+    ];
+
+    function renderAnalytics(data){
+      const chart = document.getElementById("analyticsChart");
+      chart.innerHTML = "";
+
+      data.forEach(item => {
+        const wrap = document.createElement("div");
+        wrap.className = "bar-wrap";
+        wrap.innerHTML = `
+          <div class="bar" style="height:${item.value}px;"></div>
+          <div class="bar-label">${item.label}</div>
+        `;
+        chart.appendChild(wrap);
+      });
+    }
+
+    function showWeeklyAnalytics(){
+      document.getElementById("weeklyBtn").classList.add("active");
+      document.getElementById("monthlyBtn").classList.remove("active");
+      document.getElementById("analyticsSubtitle").textContent = "Your weekly expense activity";
+      renderAnalytics(weeklyData);
+    }
+
+    function showMonthlyAnalytics(){
+      document.getElementById("monthlyBtn").classList.add("active");
+      document.getElementById("weeklyBtn").classList.remove("active");
+      document.getElementById("analyticsSubtitle").textContent = "Your monthly expense activity";
+      renderAnalytics(monthlyData);
+    }
+
+    /* ================= INIT ================= */
+    renderTransactions();
+    updateBalance();
+    updateWalletUI();
+    updateBankUI();
+    updateAssetUI();
+    renderGoals();
+    renderBills();
+    showWeeklyAnalytics();
+  </script>
+</body>
+</html>
