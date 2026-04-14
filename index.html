@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finora | AI Finance Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0f1a;
+      --bg-2:#0f1629;
+      --card:rgba(255,255,255,.08);
+      --card-2:rgba(255,255,255,.06);
+      --text:#eef2ff;
+      --muted:#a8b0cf;
+      --line:rgba(255,255,255,.12);
+      --blue:#4f8cff;
+      --green:#22c55e;
+      --cyan:#06b6d4;
+      --shadow:0 20px 60px rgba(0,0,0,.35);
+      --radius:24px;
+      --radius-sm:16px;
+      --grad:linear-gradient(135deg,var(--blue),var(--cyan),var(--green));
+      --grad-soft:radial-gradient(60% 60% at 50% 0%, rgba(79,140,255,.22), transparent 60%),
+                  radial-gradient(40% 40% at 90% 10%, rgba(34,197,94,.16), transparent 60%),
+                  radial-gradient(40% 40% at 10% 20%, rgba(6,182,212,.16), transparent 60%);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:'DM Sans',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.5;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      background:var(--grad-soft);
+      pointer-events:none;
+      z-index:-1;
+    }
+    a{text-decoration:none;color:inherit}
+    img{max-width:100%;display:block}
+    .container{width:min(1180px,92%);margin-inline:auto}
+    .glass{
+      background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+      border:1px solid var(--line);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow:var(--shadow);
+      border-radius:var(--radius);
+    }
+    .pill{
+      display:inline-flex;align-items:center;gap:.5rem;
+      padding:.55rem .9rem;border:1px solid var(--line);
+      border-radius:999px;color:#d8e1ff;background:rgba(255,255,255,.06);
+      font-size:.9rem;
+    }
+    .dot{width:8px;height:8px;border-radius:999px;background:var(--green);box-shadow:0 0 0 4px rgba(34,197,94,.16)}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:.6rem;
+      padding:.95rem 1.25rem;border-radius:18px;border:1px solid transparent;
+      font-weight:700;cursor:pointer;transition:.25s ease; user-select:none;
+    }
+    .btn-primary{
+      background:var(--grad); color:#071018; box-shadow:0 12px 30px rgba(79,140,255,.28);
+    }
+    .btn-primary:hover{transform:translateY(-2px) scale(1.01)}
+    .btn-secondary{
+      background:rgba(255,255,255,.06); border-color:var(--line); color:var(--text);
+    }
+    .btn-secondary:hover{background:rgba(255,255,255,.10)}
+    .section{padding:92px 0}
+    .section-title{
+      font-size:clamp(1.8rem,3vw,3rem);
+      line-height:1.1; margin-bottom:14px; font-weight:800;
+    }
+    .section-sub{color:var(--muted);max-width:760px}
+    .grid{display:grid;gap:22px}
+
+    /* Navbar */
+    .nav-wrap{position:sticky;top:16px;z-index:40;padding-top:16px}
+    nav{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:14px 18px;
+    }
+    .brand{display:flex;align-items:center;gap:.85rem;font-weight:800;letter-spacing:.2px}
+    .logo{
+      width:42px;height:42px;border-radius:14px;background:var(--grad);
+      display:grid;place-items:center;color:#071018;font-weight:900;box-shadow:0 12px 24px rgba(79,140,255,.28)
+    }
+    .nav-links{display:flex;gap:18px;align-items:center}
+    .nav-links a{color:#d8e1ff;opacity:.9}
+    .nav-links a:hover{opacity:1}
+    .nav-actions{display:flex;gap:10px;align-items:center}
+    .menu-btn{display:none}
+
+    /* Hero */
+    .hero{padding:34px 0 40px}
+    .hero-grid{
+      display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:center;
+    }
+    .hero h1{
+      font-size:clamp(2.4rem,5vw,4.8rem);
+      line-height:1.02;font-weight:800;letter-spacing:-1.2px;margin:18px 0 16px;
+    }
+    .gradient-text{
+      background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;
+    }
+    .hero p{color:var(--muted);font-size:1.05rem;max-width:680px}
+    .hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}
+    .mini-stats{
+      margin-top:28px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+    }
+    .mini-card{padding:18px;border-radius:20px}
+    .mini-card h3{font-size:1.3rem;margin-top:10px}
+    .mini-card p{font-size:.95rem}
+
+    /* Phone Mockup */
+    .phone{
+      position:relative; max-width:430px; margin-inline:auto;
+      padding:18px; border-radius:38px; border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+      box-shadow:var(--shadow);
+    }
+    .phone::before{
+      content:""; position:absolute; top:12px; left:50%; transform:translateX(-50%);
+      width:120px; height:26px; border-radius:0 0 18px 18px; background:#09101d; border:1px solid rgba(255,255,255,.06);
+    }
+    .screen{
+      margin-top:18px; border-radius:28px; overflow:hidden; background:linear-gradient(180deg,#0f1629,#0b0f1a);
+      min-height:720px; padding:18px;
+    }
+    .screen-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+    .avatar{width:42px;height:42px;border-radius:999px;background:rgba(255,255,255,.12);display:grid;place-items:center}
+    .balance{
+      padding:18px; border-radius:24px; background:linear-gradient(135deg, rgba(79,140,255,.20), rgba(6,182,212,.12), rgba(34,197,94,.16));
+      border:1px solid rgba(255,255,255,.12);
+    }
+    .balance .top{display:flex;justify-content:space-between;align-items:center}
+    .balance .amt{font-size:2rem;font-weight:800;margin-top:10px}
+    .kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:14px}
+    .kpi{padding:16px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid var(--line)}
+    .chart{
+      margin-top:16px;padding:16px;border-radius:22px;background:rgba(255,255,255,.06);border:1px solid var(--line)
+    }
+    .bars{display:flex;align-items:flex-end;gap:10px;height:140px;margin-top:18px}
+    .bar{flex:1;border-radius:14px 14px 8px 8px;background:linear-gradient(180deg, rgba(79,140,255,.95), rgba(6,182,212,.85));opacity:.95}
+    .bar:nth-child(2){height:64%}.bar:nth-child(1){height:38%}.bar:nth-child(3){height:82%}.bar:nth-child(4){height:58%}.bar:nth-child(5){height:90%}.bar:nth-child(6){height:52%}.bar:nth-child(7){height:72%}
+    .tx-list{display:grid;gap:12px;margin-top:16px}
+    .tx{
+      display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.05);border:1px solid var(--line)
+    }
+    .tx-left{display:flex;align-items:center;gap:12px}
+    .icon{
+      width:42px;height:42px;border-radius:14px;display:grid;place-items:center;background:rgba(255,255,255,.08)
+    }
+    .positive{color:#7ef2a4}.negative{color:#ff8f8f}
+
+    /* Features */
+    .feature-grid{grid-template-columns:repeat(3,1fr)}
+    .feature-card{padding:24px}
+    .feature-card h3{margin:16px 0 8px;font-size:1.15rem}
+    .feature-card p{color:var(--muted)}
+
+    /* Showcase */
+    .showcase{
+      display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch;
+    }
+    .panel{padding:24px;min-height:420px;position:relative;overflow:hidden}
+    .panel h3{font-size:1.4rem;margin-bottom:10px}
+    .panel p{color:var(--muted);max-width:60ch}
+    .budget-ring{
+      width:220px;height:220px;border-radius:999px;margin:34px auto 0;position:relative;
+      background:conic-gradient(var(--green) 0 72%, rgba(255,255,255,.12) 72% 100%);
+      display:grid;place-items:center;
+      box-shadow:inset 0 0 0 14px rgba(255,255,255,.06);
+    }
+    .budget-ring::after{
+      content:"";width:154px;height:154px;border-radius:999px;background:#0d1424;border:1px solid var(--line);
+      position:absolute;
+    }
+    .budget-center{position:relative;z-index:2;text-align:center}
+    .budget-center h4{font-size:2rem}
+    .chatbox{
+      margin-top:22px;display:grid;gap:12px
+    }
+    .bubble{
+      max-width:78%;padding:14px 16px;border-radius:18px;border:1px solid var(--line)
+    }
+    .bubble.user{justify-self:end;background:rgba(79,140,255,.14)}
+    .bubble.ai{background:rgba(255,255,255,.06)}
+
+    /* CTA */
+    .cta-card{
+      padding:34px;display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:center
+    }
+    .cta-card h2{font-size:clamp(1.8rem,3vw,3rem);line-height:1.08}
+    .cta-card p{color:var(--muted);margin-top:12px}
+
+    /* Footer */
+    footer{padding:28px 0 56px;color:var(--muted)}
+    .footer-row{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap}
+
+    /* Modal */
+    .overlay{
+      position:fixed; inset:0; background:rgba(0,0,0,.55);
+      display:none; place-items:center; z-index:100;
+      padding:18px;
+    }
+    .overlay.active{display:grid}
+    .modal{
+      width:min(980px,100%); display:grid; grid-template-columns:1fr 1fr; overflow:hidden;
+      border-radius:28px;
+    }
+    .modal-left{
+      padding:34px; background:linear-gradient(180deg,#10192e,#0b0f1a);
+      border-right:1px solid var(--line); position:relative;
+    }
+    .modal-left::after{
+      content:""; position:absolute; inset:auto -60px -60px auto; width:220px; height:220px; border-radius:999px;
+      background:radial-gradient(circle at center, rgba(79,140,255,.25), transparent 60%);
+      filter:blur(8px);
+    }
+    .modal-right{padding:34px}
+    .tabs{display:flex;gap:10px;margin-bottom:20px}
+    .tab{
+      padding:.75rem 1rem;border-radius:14px;border:1px solid var(--line);cursor:pointer;background:rgba(255,255,255,.05)
+    }
+    .tab.active{background:rgba(79,140,255,.18);border-color:rgba(79,140,255,.4)}
+    .form{display:grid;gap:14px}
+    .field{
+      display:grid;gap:8px
+    }
+    .field label{font-size:.95rem;color:#d8e1ff}
+    .input{
+      width:100%; padding:14px 16px; border-radius:16px; border:1px solid var(--line);
+      background:rgba(255,255,255,.06); color:var(--text); outline:none;
+    }
+    .input:focus{border-color:rgba(79,140,255,.55); box-shadow:0 0 0 4px rgba(79,140,255,.12)}
+    .row{display:flex;justify-content:space-between;gap:12px;align-items:center}
+    .close{
+      position:absolute; top:18px; right:18px; width:40px; height:40px; border-radius:999px;
+      border:1px solid var(--line); background:rgba(255,255,255,.08); color:var(--text); cursor:pointer;
+    }
+    .helper{color:var(--muted);font-size:.92rem}
+    .divider{
+      display:flex;align-items:center;gap:12px;color:var(--muted);font-size:.9rem;margin:4px 0;
+    }
+    .divider::before,.divider::after{content:"";height:1px;flex:1;background:var(--line)}
+    .social{
+      width:100%;padding:14px 16px;border-radius:16px;border:1px solid var(--line);
+      background:rgba(255,255,255,.06); color:var(--text); cursor:pointer; font-weight:700;
+    }
+    .hidden{display:none}
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .hero-grid,.showcase,.cta-card,.modal{grid-template-columns:1fr}
+      .phone{max-width:100%}
+      .feature-grid{grid-template-columns:1fr 1fr}
+      .nav-links{display:none}
+      .menu-btn{display:inline-flex}
+    }
+    @media (max-width: 640px){
+      .mini-stats,.feature-grid{grid-template-columns:1fr}
+      .nav-actions .btn-secondary{display:none}
+      .section{padding:74px 0}
+      .screen{min-height:auto}
+      .modal-left{display:none}
+    }
+
+    /* Reveal animation */
+    .reveal{opacity:0; transform:translateY(18px); transition:all .7s ease}
+    .reveal.show{opacity:1; transform:none}
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <div class="nav-wrap">
+    <div class="container">
+      <nav class="glass">
+        <a href="#" class="brand">
+          <span class="logo">F</span>
+          <span>Finora</span>
+        </a>
+
+        <div class="nav-links">
+          <a href="#features">Features</a>
+          <a href="#dashboard">Dashboard</a>
+          <a href="#assistant">AI Assistant</a>
+          <a href="#pricing">Plans</a>
+        </div>
+
+        <div class="nav-actions">
+          <button class="btn btn-secondary" id="loginBtn">Login</button>
+          <button class="btn btn-primary" id="signupBtn">Get Started</button>
+          <button class="btn btn-secondary menu-btn" id="menuBtn">☰</button>
+        </div>
+      </nav>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="container hero-grid">
+      <div class="reveal">
+        <span class="pill"><span class="dot"></span> AI-powered personal finance platform</span>
+        <h1>Take control of your money with <span class="gradient-text">Finora</span>.</h1>
+        <p>
+          Track expenses, plan budgets, monitor savings, and get intelligent AI insights
+          to make smarter financial decisions — all in one premium dashboard.
+        </p>
+
+        <div class="hero-cta">
+          <button class="btn btn-primary" id="heroStart">Start Free</button>
+          <a class="btn btn-secondary" href="#dashboard">View Dashboard</a>
+        </div>
+
+        <div class="mini-stats">
+          <div class="mini-card glass">
+            <div class="pill">Monthly Budget</div>
+            <h3>₹45,000</h3>
+            <p>Keep spending aligned with your goals.</p>
+          </div>
+          <div class="mini-card glass">
+            <div class="pill">AI Savings Tip</div>
+            <h3>+12%</h3>
+            <p>Reduce food delivery costs this month.</p>
+          </div>
+          <div class="mini-card glass">
+            <div class="pill">Transactions</div>
+            <h3>1,248</h3>
+            <p>All your money movement in one place.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PHONE PREVIEW -->
+      <div class="reveal">
+        <div class="phone">
+          <div class="screen">
+            <div class="screen-top">
+              <div>
+                <div class="helper">Good evening</div>
+                <h3 style="margin-top:4px;">Hetvi 👋</h3>
+              </div>
+              <div class="avatar">💳</div>
+            </div>
+
+            <div class="balance">
+              <div class="top">
+                <span class="pill">Total Balance</span>
+                <span class="pill">+2.4%</span>
+              </div>
+              <div class="amt">₹1,28,430</div>
+              <p class="helper" style="margin-top:6px;">Updated today • All linked accounts</p>
+
+              <div class="kpis">
+                <div class="kpi">
+                  <div class="helper">Income</div>
+                  <h3 style="margin-top:6px;" class="positive">+ ₹72,500</h3>
+                </div>
+                <div class="kpi">
+                  <div class="helper">Expense</div>
+                  <h3 style="margin-top:6px;" class="negative">- ₹31,920</h3>
+                </div>
+              </div>
+            </div>
+
+            <div class="chart">
+              <div class="row">
+                <h4>Weekly Analytics</h4>
+                <span class="pill">This Week</span>
+              </div>
+              <div class="bars">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+              </div>
+            </div>
+
+            <div class="tx-list">
+              <div class="row" style="margin-top:4px;">
+                <h4>Recent Transactions</h4>
+                <span class="helper">View all</span>
+              </div>
+
+              <div class="tx">
+                <div class="tx-left">
+                  <div class="icon">🍔</div>
+                  <div>
+                    <strong>Zomato</strong>
+                    <div class="helper">Food & Dining</div>
+                  </div>
+                </div>
+                <strong class="negative">- ₹420</strong>
+              </div>
+
+              <div class="tx">
+                <div class="tx-left">
+                  <div class="icon">🛍️</div>
+                  <div>
+                    <strong>Amazon</strong>
+                    <div class="helper">Shopping</div>
+                  </div>
+                </div>
+                <strong class="negative">- ₹1,299</strong>
+              </div>
+
+              <div class="tx">
+                <div class="tx-left">
+                  <div class="icon">💼</div>
+                  <div>
+                    <strong>Freelance Payment</strong>
+                    <div class="helper">Income</div>
+                  </div>
+                </div>
+                <strong class="positive">+ ₹8,500</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- FEATURES -->
+  <section class="section" id="features">
+    <div class="container">
+      <div class="reveal">
+        <h2 class="section-title">Everything you need to manage money smarter</h2>
+        <p class="section-sub">
+          Finora combines budgeting, expense tracking, analytics, and an AI finance assistant
+          into one beautiful experience.
+        </p>
+      </div>
+
+      <div class="grid feature-grid" style="margin-top:28px;">
+        <div class="feature-card glass reveal">
+          <div class="logo" style="width:54px;height:54px;border-radius:18px;">📊</div>
+          <h3>Smart Analytics</h3>
+          <p>Understand your spending habits with clean charts, category insights, and monthly comparisons.</p>
+        </div>
+
+        <div class="feature-card glass reveal">
+          <div class="logo" style="width:54px;height:54px;border-radius:18px;">🤖</div>
+          <h3>AI Finance Assistant</h3>
+          <p>Ask natural questions like “Where can I save money this month?” and get actionable suggestions.</p>
+        </div>
+
+        <div class="feature-card glass reveal">
+          <div class="logo" style="width:54px;height:54px;border-radius:18px;">🎯</div>
+          <h3>Budget Goals</h3>
+          <p>Create monthly budgets and savings goals with progress tracking and overspending alerts.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD / AI -->
+  <section class="section" id="dashboard">
+    <div class="container showcase">
+      <div class="panel glass reveal">
+        <span class="pill">Budget Planner</span>
+        <h3 style="margin-top:16px;">Stay within your monthly spending goal</h3>
+        <p>Visualize how much of your budget is used and get notified before you overspend.</p>
+
+        <div class="budget-ring">
+          <div class="budget-center">
+            <div class="helper">Used</div>
+            <h4>72%</h4>
+            <div class="helper">₹32,400 / ₹45,000</div>
+          </div>
+        </div>
+
+        <div class="grid" style="grid-template-columns:1fr 1fr; margin-top:22px;">
+          <div class="mini-card glass">
+            <div class="helper">Food</div>
+            <h3>₹8,200</h3>
+          </div>
+          <div class="mini-card glass">
+            <div class="helper">Travel</div>
+            <h3>₹4,450</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel glass reveal" id="assistant">
+        <span class="pill">AI Assistant</span>
+        <h3 style="margin-top:16px;">Ask Finora anything about your money</h3>
+        <p>Your AI companion can summarize spending, suggest savings, and help you plan smarter.</p>
+
+        <div class="chatbox">
+          <div class="bubble user">How can I save more this month?</div>
+          <div class="bubble ai">You spent 18% more on food delivery. Limiting orders to 2 times/week could save around ₹2,800.</div>
+          <div class="bubble user">What about my shopping?</div>
+          <div class="bubble ai">Shopping is 9% above your average. Consider setting a weekly cap of ₹1,500.</div>
+        </div>
+
+        <div class="row" style="margin-top:18px;">
+          <input class="input" placeholder="Ask about your spending, budget, or goals..." />
+          <button class="btn btn-primary">Ask AI</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section" id="pricing">
+    <div class="container">
+      <div class="cta-card glass reveal">
+        <div>
+          <span class="pill">Start for free</span>
+          <h2 style="margin-top:16px;">Build better money habits with <span class="gradient-text">Finora</span>.</h2>
+          <p>
+            Join users who track expenses, hit savings goals, and use AI insights to stay in control.
+          </p>
+        </div>
+
+        <div class="grid" style="grid-template-columns:1fr;gap:14px;">
+          <div class="mini-card glass">
+            <div class="helper">Free Plan</div>
+            <h3 style="margin-top:8px;">₹0 / month</h3>
+            <p>Expense tracking, budget setup, and dashboard overview.</p>
+          </div>
+          <div class="mini-card glass">
+            <div class="helper">Pro Plan</div>
+            <h3 style="margin-top:8px;">₹299 / month</h3>
+            <p>AI insights, advanced analytics, smart alerts, and premium support.</p>
+          </div>
+          <div class="row">
+            <button class="btn btn-primary" id="ctaStart">Create Account</button>
+            <button class="btn btn-secondary">See Plans</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container footer-row">
+      <div>© <span id="year"></span> Finora. All rights reserved.</div>
+      <div style="display:flex;gap:18px;flex-wrap:wrap;">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Support</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- AUTH MODAL -->
+  <div class="overlay" id="authOverlay" aria-hidden="true">
+    <div class="modal glass">
+      <button class="close" id="closeModal" aria-label="Close">✕</button>
+
+      <div class="modal-left">
+        <span class="pill">Welcome to Finora</span>
+        <h2 style="font-size:2.4rem; line-height:1.05; margin-top:18px;">
+          Your smart <span class="gradient-text">AI finance</span> companion.
+        </h2>
+        <p class="helper" style="margin-top:12px; max-width:44ch;">
+          Track expenses, monitor budgets, and get AI-powered recommendations with a premium experience.
+        </p>
+
+        <div class="grid" style="grid-template-columns:1fr 1fr; gap:14px; margin-top:26px;">
+          <div class="mini-card glass">
+            <div class="helper">Budget Health</div>
+            <h3>Excellent</h3>
+          </div>
+          <div class="mini-card glass">
+            <div class="helper">Savings Trend</div>
+            <h3>+14%</h3>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-right">
+        <div class="tabs">
+          <button class="tab active" data-tab="login">Login</button>
+          <button class="tab" data-tab="signup">Sign Up</button>
+        </div>
+
+        <!-- LOGIN -->
+        <form class="form" id="loginForm">
+          <div class="field">
+            <label>Email</label>
+            <input class="input" type="email" placeholder="you@example.com" required />
+          </div>
+          <div class="field">
+            <label>Password</label>
+            <input class="input" type="password" placeholder="••••••••" required />
+          </div>
+          <div class="row">
+            <label class="helper"><input type="checkbox" /> Remember me</label>
+            <a href="#" class="helper">Forgot password?</a>
+          </div>
+          <button class="btn btn-primary" type="submit">Login to Finora</button>
+          <div class="divider">or continue with</div>
+          <button class="social" type="button">Continue with Google</button>
+        </form>
+
+        <!-- SIGNUP -->
+        <form class="form hidden" id="signupForm">
+          <div class="field">
+            <label>Full Name</label>
+            <input class="input" type="text" placeholder="Hetvi Patel" required />
+          </div>
+          <div class="field">
+            <label>Email</label>
+            <input class="input" type="email" placeholder="you@example.com" required />
+          </div>
+          <div class="field">
+            <label>Password</label>
+            <input class="input" type="password" placeholder="Create a strong password" required />
+          </div>
+          <div class="field">
+            <label>Confirm Password</label>
+            <input class="input" type="password" placeholder="Confirm password" required />
+          </div>
+          <button class="btn btn-primary" type="submit">Create Finora Account</button>
+          <div class="divider">or continue with</div>
+          <button class="social" type="button">Continue with Google</button>
+        </form>
+
+        <p class="helper" style="margin-top:16px;">
+          By continuing, you agree to Finora’s Terms and Privacy Policy.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Year
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Reveal on scroll
+    const observer = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          entry.target.classList.add('show');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Auth modal
+    const overlay = document.getElementById('authOverlay');
+    const loginBtn = document.getElementById('loginBtn');
+    const signupBtn = document.getElementById('signupBtn');
+    const heroStart = document.getElementById('heroStart');
+    const ctaStart = document.getElementById('ctaStart');
+    const closeModal = document.getElementById('closeModal');
+
+    const tabs = document.querySelectorAll('.tab');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+
+    function openModal(mode = 'login'){
+      overlay.classList.add('active');
+      overlay.setAttribute('aria-hidden', 'false');
+      switchTab(mode);
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeAuth(){
+      overlay.classList.remove('active');
+      overlay.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    function switchTab(mode){
+      tabs.forEach(tab=>{
+        tab.classList.toggle('active', tab.dataset.tab === mode);
+      });
+      loginForm.classList.toggle('hidden', mode !== 'login');
+      signupForm.classList.toggle('hidden', mode !== 'signup');
+    }
+
+    loginBtn.addEventListener('click', ()=>openModal('login'));
+    signupBtn.addEventListener('click', ()=>openModal('signup'));
+    heroStart.addEventListener('click', ()=>openModal('signup'));
+    ctaStart.addEventListener('click', ()=>openModal('signup'));
+    closeModal.addEventListener('click', closeAuth);
+
+    overlay.addEventListener('click', (e)=>{
+      if(e.target === overlay) closeAuth();
+    });
+
+    tabs.forEach(tab=>{
+      tab.addEventListener('click', ()=>switchTab(tab.dataset.tab));
+    });
+
+    // Fake form handling
+    loginForm.addEventListener('submit', (e)=>{
+  e.preventDefault();
+
+  const email = loginForm.querySelectorAll('input')[0].value;
+  const password = loginForm.querySelectorAll('input')[1].value;
+
+  const savedUser = JSON.parse(localStorage.getItem("user"));
+
+  if(savedUser && savedUser.email === email && savedUser.password === password){
+    window.location.href = "dashboard.html";
+  } else {
+    alert("Invalid email or password!");
+  }
+});
+    signupForm.addEventListener('submit', (e)=>{
+  e.preventDefault();
+
+  const name = signupForm.querySelectorAll('input')[0].value;
+  const email = signupForm.querySelectorAll('input')[1].value;
+  const password = signupForm.querySelectorAll('input')[2].value;
+  const confirm = signupForm.querySelectorAll('input')[3].value;
+
+  if(password !== confirm){
+    alert("Password does not match!");
+    return;
+  }
+
+  // Save user data in browser
+  localStorage.setItem("user", JSON.stringify({name,email,password}));
+
+  // Open dashboard
+  window.location.href = "dashboard.html";
+});
+
+    // Simple mobile menu action
+    document.getElementById('menuBtn').addEventListener('click', ()=>{
+      const links = document.querySelector('.nav-links');
+      const current = getComputedStyle(links).display;
+      links.style.display = current === 'none' ? 'flex' : 'none';
+      links.style.position = 'absolute';
+      links.style.top = '74px';
+      links.style.right = '18px';
+      links.style.padding = '16px';
+      links.style.border = '1px solid rgba(255,255,255,.12)';
+      links.style.borderRadius = '20px';
+      links.style.background = 'rgba(15,22,41,.95)';
+      links.style.flexDirection = 'column';
+      links.style.minWidth = '180px';
+      links.style.backdropFilter = 'blur(16px)';
+    });
+  </script>
+</body>
+</html>
